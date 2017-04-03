@@ -71,19 +71,21 @@ class Case(models.Model):
 	def __str__(self):
 		return str(self.user) + " | " + str(self.caseworker) + " | " + self.name
 
+def user_directory_path(instance, filename):
+	    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+	    return 'user_{0}/{1}'.format(instance.user.id, filename)
+
 class Comment(models.Model): 
 	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	case = models.ForeignKey(Case, on_delete=models.CASCADE)
 	title = models.CharField(max_length=200)
 	body = models.TextField()
 	created_date = models.DateTimeField('date comment created', default=timezone.now())
-	def user_directory_path(instance, filename):
-	    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-	    return 'user_{0}/{1}'.format(instance.user.id, filename)
 
 	document = models.FileField(upload_to=user_directory_path, null=True, blank=True)
 	
 	def __str__(self):
 		return str(self.user) + " | " + self.title
+
 
 

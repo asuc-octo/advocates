@@ -1,2 +1,3 @@
 django
-send_mail
+smtplib
+email

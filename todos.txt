@@ -1,0 +1,22 @@
+- Edit Case
+	(1) If student, can do generic edit, only on their own
+	(2) If case worker, can change status and everything else, only if their own
+	(3) If case worker, can change status and everything else, only if their own, ONLY WITHIN 24 HOURS
+	(4) SA can do anything
+
+	(5) IT IS NOT UPDATING THE CASEWORKER
+
+
+- When you open a new case, you want more categories for a new case
+- Eventually, when you open a case, you can attatch files
+
+
+------------------
+- Style Home Page (create case, view cases)
+- Style "Create User" Page
+- Style "Login" Page
+- Style "Cases" Page
+- Style "Create users" page
+
+___________________
+-Testing

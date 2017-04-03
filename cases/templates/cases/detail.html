@@ -1,0 +1,33 @@
+{% extends 'cases/base.html' %}
+
+{% block content %}
+	<b>Name: </b> {{case.name}} <br>
+	<b>Creator: </b> {{case.user}} <br>
+	<b>Case Worker: </b> {{case.caseworker.user.username}} <br>
+	<b>Status: </b> {{case.status}} <br>
+	<b>Division: </b> {{case.division}} <br>
+	<b>Date Created:</b> {{case.open_date}} <br>
+	<b>Last Updated:</b> {{case.last_update}} <br>
+	<b>Number of days open:</b> {{case.days_open}} <br>
+	<b>Notes:</b> {{case.notes}} <br>
+
+	<a href="/cases/{{ case.id }}/edit/">Edit Case</a> | <a href="/cases/{{ case.id }}/delete/">Delete Case</a> 
+
+	<hr>
+	{% for comment in case.comment_set.all %}
+	    <div class="comment">
+	        <div class="date">{{ comment.created_date }}</div>
+	        <strong>{{ comment.user }}</strong>
+	        <h3>{{comment.title}}</h3>
+	        <p>{{ comment.body|linebreaks }}</p><br>
+	    </div>
+	{% empty %}
+	    <p>No comments here yet :(</p>
+	{% endfor %}
+
+	<form method="POST" enctype="multipart/form-data" class="post-form">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="save btn btn-default">Save</button>
+    </form>
+
+{% endblock %}

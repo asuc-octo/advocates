@@ -1,0 +1,37 @@
+{% extends 'cases/base.html' %}
+
+{% block content %}
+
+	{% if user.is_authenticated %}
+	    {% if case_list %}
+	    	<h1>Cases</h1>
+		    {% for case in case_list %}
+		    	{% with case.days_open as d_o %}
+		    	{% if d_o <= 2 %}
+		    		green
+		    		<h3 class="green"><a href="/cases/{{ case.id }}/">{{ case.name }}</a></h3>
+		    	{% elif d_o > 2 and d_o <= 7 %}
+		    		yellow
+		    		<h3 class="yellow"><a href="/cases/{{ case.id }}/">{{ case.name }}</a></h3>
+		    	{% else %}
+		    		red
+		    		<h3 class="red"><a href="/cases/{{ case.id }}/">{{ case.name }}</a></h3>
+		    	{% endif %}
+		        
+				<b>Case Worker: </b> {{case.caseworker.user.username}} <br>
+				<b>Status: </b> {{case.status}} <br>
+				<b>Division: </b> {{case.division}} <br>
+				<b>Date Created:</b> {{case.open_date}} <br>
+				<b>Last Updated:</b> {{case.last_update}} <br>
+				{% endwith %}
+		    {% endfor %}
+		    </ul>
+		{% else %}
+		    <p>No polls are available.</p>
+		{% endif %}<br>
+		<a href="{% url 'case_create' %}">New Case</a>
+	{% else %}
+	    Not logged in.
+	{% endif %}
+
+{% endblock %}

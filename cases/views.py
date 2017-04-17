@@ -8,13 +8,17 @@ from django.db.models import Q
 from .forms import *
 from django.utils import timezone
 from datetime import datetime, timedelta
-from send_mail import send_mail
+# from send_mail import send_mail
+from django.core.mail import send_mail
+
+PASSWORD = "saorocks!"
+FROM_ADDRESS = "noreplysaoberkeley@gmail.com"
 
 def get_advocate():
-	try: 
+	try:
 		advocate = CaseWorker.objects.filter(id=1)[0]
 		return advocate
-	except Exception: 
+	except Exception:
 		adv_user = User(username="advocates", password="saorocks", email = "advocate@asuc.org")
 		adv_user.first_name = "Super"
 		adv_user.last_name = "User"
@@ -25,16 +29,16 @@ def get_advocate():
 
 def get_caseworker_details(request):
 	PERMISSION_CHOICES = (
-		("General", "General"), 
-		("Director", "Director"), 
-		("Policy Coordinator", "Policy Coordinator"), 
-		("Chief of Staff", "Chief of Staff"), 
+		("General", "General"),
+		("Director", "Director"),
+		("Policy Coordinator", "Policy Coordinator"),
+		("Chief of Staff", "Chief of Staff"),
 		("Student Advocate", "Student Advocate"),
 	)
 	cw = CaseWorker.objects.filter(user = request.user)
-	if len(cw) > 0: 
-		return (cw[0], cw[0].permissions) 
-	else: 
+	if len(cw) > 0:
+		return (cw[0], cw[0].permissions)
+	else:
 		return (None, None)
 
 
@@ -61,15 +65,15 @@ def index(request):
 	return HttpResponse(template.render(context, request))
 
 @login_required(login_url='/login/')
-def create(request): 
+def create(request):
 	if request.method == 'POST':
 		print "checkpoint 1"
 		form = CaseForm(request.POST, request.FILES)
-		if form.is_valid(): 
+		if form.is_valid():
 			print ""
 			advocate = get_advocate()
 			case = form.save(commit=False)
-			case.user = request.user 
+			case.user = request.user
 			case.status = "Open"
 			# case.open_date = timezone.now()
 			# case.last_update = timezone.now()
@@ -77,18 +81,42 @@ def create(request):
 			case.save()
 			# email_message = "Your case has been created. Please go to localhost:8000/cases" + str(case.id) + "/"
 			# send_mail(case.user.email, case.name + " [New Case Created]", email_message)
-			# email_message = "A new case has been created and a caseworker must be assigned. Please go to localhost:8000/" + str(case.id) 
-			
+			# email_message = "A new case has been created and a caseworker must be assigned. Please go to localhost:8000/" + str(case.id)
+
 			# send_mail("advocate@asuc.org", case.name + " [New Case Created]", email_message)
-			
+
+			user_email_msg = "Your case has been created. Please go to localhost:8000/cases" + str(case.id) + "/"
+			user_email_sub = case.name + " [New Case Created]"
+			send_mail(
+			    user_email_sub,
+			   	user_email_msg,
+			    FROM_ADDRESS,
+				auth_user=FROM_ADDRESS,
+				auth_password=PASSWORD,
+			    recipient_list=[case.user.email],
+			    fail_silently=False,
+			)
+
+			sao_email_msg = "Your case has been created. Please go to localhost:8000/cases" + str(case.id) + "/"
+			sao_eamil_sub = case.name + " [New Case Created]"
+			send_mail(
+			    sao_email_subject,
+			    email_message,
+				FROM_ADDRESS,
+				auth_user=FROM_ADDRESS,
+				auth_password=PASSWORD,
+			    recipient_list=['advocate@asuc.org'],
+			    fail_silently=False,
+			)
+
 			return redirect('case_detail', case.pk)
 
-	else: 
+	else:
 		form = CaseForm()
 	return render(request, 'cases/edit_case.html', {'form': form})
 
 @login_required(login_url='/login/')
-def edit(request, case_id): 
+def edit(request, case_id):
 	'''
 	(1) If student, can do generic edit, only on their own
 	(2) If case worker, can change status and everything else, only if their own
@@ -103,9 +131,9 @@ def edit(request, case_id):
 			form = CWCaseForm(request.POST, instance=case)
 		elif cw_permissions == "Chief of Staff" or cw_permissions == "Student Advocate":
 			form = DirectorCaseForm(request.POST, instance=case)
-		if form.is_valid(): 
+		if form.is_valid():
 			case = form.save(commit=False)
-			# case.user = request.user 
+			# case.user = request.user
 			# case.status = "Open"
 			case.last_update = timezone.now()
 			case.save()
@@ -113,22 +141,22 @@ def edit(request, case_id):
 			# send_mail(case.user.email, case.name + " [Case Update]", email_message)
 
 			# send_mail(case.caseworker.user.email, case.name + " [Case Update]", email_message)
-			
+
 			return redirect('case_detail', case.pk)
 
-	else: 
+	else:
 		form = None
 		prev_date = timezone.now() - timedelta(days = 2)
-		
+
 		if case.user == request.user:
 			form = CaseForm(instance = case)
 		elif (cw_permissions == "Chief of Staff" or cw_permissions == "Student Advocate") or ((cw_permissions == "Director" or cw_permissions == "Policy Coordinator") and (case.open_date > prev_date)):
 			form = DirectorCaseForm(instance = case)
-		elif case.caseworker == cw_user: 
+		elif case.caseworker == cw_user:
 			form = CWCaseForm(instance = case)
-		else: 
+		else:
 			return HttpResponse("You do not have acccess to this case.")
-		
+
 	return render(request, 'cases/edit_case.html', {'form': form})
 
 
@@ -139,7 +167,7 @@ def results(request, case_id):
 
 @login_required(login_url='/login/')
 def detail(request, case_id):
-	try: 
+	try:
 		cw_user, cw_permissions = get_caseworker_details(request)
 		case = Case.objects.get(pk=case_id)
 		prev_date = timezone.now() - timedelta(days = 2)
@@ -149,15 +177,15 @@ def detail(request, case_id):
 		raise Http404("Case does not exist")
 	if request.method == 'POST':
 		form = CommentForm(request.POST, request.FILES)
-		if form.is_valid(): 
+		if form.is_valid():
 			comment = form.save(commit=False)
-			comment.user = request.user 
+			comment.user = request.user
 			comment.case = case
 			comment.created_date = timezone.now()
 			comment.save()
 			return redirect('case_detail', case.pk)
 
-	else: 
+	else:
 		form = CommentForm()
 	return render(request, 'cases/detail.html', {'case': case, 'form': form})
 
@@ -176,4 +204,3 @@ def delete(request, case_id):
 	instance = Case.objects.get(id=case_id)
 	instance.delete()
 	return redirect('index')
-

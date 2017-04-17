@@ -16,7 +16,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOGIN_REDIRECT_URL = 'case_index'
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media') 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
@@ -120,3 +120,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# SMTP settings for sending emails
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EAMIL_HOST_USER = "noreplysaoberkeley@gmail.com"
+EMAIL_HOST_PASSWORD = "saorocks!"
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = "noreplysaoberkeley@gmail.com"
+SERVER_EMAIL = "noreplysaoberkeley@gmail.com"

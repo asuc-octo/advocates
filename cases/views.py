@@ -13,6 +13,7 @@ from django.core.mail import send_mail
 
 PASSWORD = "saorocks!"
 FROM_ADDRESS = "noreplysaoberkeley@gmail.com"
+ADVOCATE_ADDRESS = "advocate@asuc.org"
 
 def get_advocate():
 	try:
@@ -64,6 +65,18 @@ def index(request):
 	}
 	return HttpResponse(template.render(context, request))
 
+# helper function to send emails
+def send_email(subject, message, to):
+	send_mail(
+		subject,
+		message,
+		FROM_ADDRESS,
+		auth_user=FROM_ADDRESS,
+		auth_password=PASSWORD,
+		recipient_list=[to],
+		fail_silently=False,
+	)
+
 @login_required(login_url='/login/')
 def create(request):
 	if request.method == 'POST':
@@ -79,35 +92,13 @@ def create(request):
 			# case.last_update = timezone.now()
 			case.caseworker = advocate
 			case.save()
-			# email_message = "Your case has been created. Please go to localhost:8000/cases" + str(case.id) + "/"
-			# send_mail(case.user.email, case.name + " [New Case Created]", email_message)
-			# email_message = "A new case has been created and a caseworker must be assigned. Please go to localhost:8000/" + str(case.id)
 
-			# send_mail("advocate@asuc.org", case.name + " [New Case Created]", email_message)
+			sub = case.name + " [New Case Created]"
+			msg_to_user = "Your case has been created. Please go to localhost:8000/cases" + str(case.id) + "/"
+			msg_to_sao = "Your case has been created. Please go to localhost:8000/cases" + str(case.id) + "/"
 
-			user_email_msg = "Your case has been created. Please go to localhost:8000/cases" + str(case.id) + "/"
-			user_email_sub = case.name + " [New Case Created]"
-			send_mail(
-			    user_email_sub,
-			   	user_email_msg,
-			    FROM_ADDRESS,
-				auth_user=FROM_ADDRESS,
-				auth_password=PASSWORD,
-			    recipient_list=[case.user.email],
-			    fail_silently=False,
-			)
-
-			sao_email_msg = "Your case has been created. Please go to localhost:8000/cases" + str(case.id) + "/"
-			sao_eamil_sub = case.name + " [New Case Created]"
-			send_mail(
-			    sao_email_subject,
-			    email_message,
-				FROM_ADDRESS,
-				auth_user=FROM_ADDRESS,
-				auth_password=PASSWORD,
-			    recipient_list=['advocate@asuc.org'],
-			    fail_silently=False,
-			)
+			send_email(sub, msg_to_user, case.user.email)
+			send_email(sub, msg_to_sao, ADVOCATE_ADDRESS)
 
 			return redirect('case_detail', case.pk)
 
@@ -137,10 +128,11 @@ def edit(request, case_id):
 			# case.status = "Open"
 			case.last_update = timezone.now()
 			case.save()
-			# email_message = "Your case has been updated. Please go to localhost:8000/cases" + str(case.id) + "/"
-			# send_mail(case.user.email, case.name + " [Case Update]", email_message)
 
-			# send_mail(case.caseworker.user.email, case.name + " [Case Update]", email_message)
+			sub = case.name + " [Case Update]"
+			msg = "Your case has been updated. Please go to localhost:8000/cases" + str(case.id) + "/"
+			send_email(sub, msg, case.user.email)
+			send_email(sub, msg, case.caseworker.user.email)
 
 			return redirect('case_detail', case.pk)
 

@@ -27,4 +27,4 @@ def create(request):
 
 	else: 
 		form = UserForm()
-	return render(request, 'new_user.html', {'form': form})
+	return render(request, 'general/new_user.html', {'form': form})

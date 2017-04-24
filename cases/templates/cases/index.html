@@ -6,6 +6,7 @@
 	    {% if case_list %}
 	    	<h1>Cases</h1>
 		    {% for case in case_list %}
+<<<<<<< HEAD
 		    	
 		    		{% with case.days_open as d_o %}
 			    	{% if d_o <= 2 and case.status == "Open" %}
@@ -28,6 +29,40 @@
 				<b>Date Created:</b> {{case.open_date}} <br>
 				<b>Last Updated:</b> {{case.last_update}} <br>
 	
+=======
+		    	{% with case.days_open as d_o %}
+		    	{% if d_o <= 2 and case.status == "Open"%}
+		    		green
+
+		    		<h3 class="green"><a href="/cases/{{ case.id }}/">{{ case.name }}</a></h3>
+					<b>Case Worker: </b> {{case.caseworker.user.username}} <br>
+
+					<b>Status: </b> <span class= "label label-success">{{case.status}}</span> <br>
+		    	{% elif d_o > 2 and d_o <= 7 %}
+		    		yellow
+		    		<h3 class="yellow"><a href="/cases/{{ case.id }}/">{{ case.name }}</a></h3>
+					<b>Case Worker: </b> {{case.caseworker.user.username}} <br>
+
+					<b>Status: </b> <span class= "label label-warning">{{case.status}}</span> <br>
+
+		    	{% elif case.status == "Open"%}
+		    		red
+		    		<h3 class="red"><a href="/cases/{{ case.id }}/">{{ case.name }}</a></h3>
+					<b>Case Worker: </b> {{case.caseworker.user.username}} <br>
+
+					<b>Status: </b> <span class= "label label-danger">{{case.status}}</span> <br>
+		    	{% else %}
+					<b>Case Worker: </b> {{case.caseworker.user.username}} <br>
+
+					<b>Status: </b> <span class= "label label-default">{{case.status}}</span> <br>
+
+				{% endif %}
+			{% endwith %}
+
+			<b>Division: </b> {{case.division}} <br>
+			<b>Date Created:</b> {{case.open_date}} <br>
+			<b>Last Updated:</b> {{case.last_update}} <br>
+>>>>>>> origin/frontend_tweaks
 		    {% endfor %}
 		    </ul>
 		{% else %}

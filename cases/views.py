@@ -8,7 +8,7 @@ from django.db.models import Q
 from .forms import *
 from django.utils import timezone
 from datetime import datetime, timedelta
-from send_mail import send_mail
+"""from send_mail import send_mail"""
 
 def get_advocate():
 	try: 
@@ -63,10 +63,10 @@ def index(request):
 @login_required(login_url='/login/')
 def create(request): 
 	if request.method == 'POST':
-		print "checkpoint 1"
+		print ("checkpoint 1")
 		form = CaseForm(request.POST, request.FILES)
 		if form.is_valid(): 
-			print ""
+			print ("")
 			advocate = get_advocate()
 			case = form.save(commit=False)
 			case.user = request.user 

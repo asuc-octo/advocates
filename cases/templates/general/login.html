@@ -4,10 +4,16 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-  <h2>Login</h2>
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-  </form>
+	{% if user.is_authenticated %}
+  		<h2>You are currently signed in as {{request.user}}.</h2>
+  		<a href="{% url 'logout' %}">Log Out</a>
+
+  	{% else %}
+	  	<h2>Login</h2>
+  		<form method="post">
+    		{% csrf_token %}
+    		{{ form.as_p }}
+    		<button type="submit">Login</button>
+  		</form>
+  	{% endif %}
 {% endblock %}

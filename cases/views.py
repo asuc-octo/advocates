@@ -71,15 +71,8 @@ def create(request):
 			case = form.save(commit=False)
 			case.user = request.user 
 			case.status = "Open"
-			# case.open_date = timezone.now()
-			# case.last_update = timezone.now()
 			case.caseworker = advocate
 			case.save()
-			# email_message = "Your case has been created. Please go to localhost:8000/cases" + str(case.id) + "/"
-			# send_mail(case.user.email, case.name + " [New Case Created]", email_message)
-			# email_message = "A new case has been created and a caseworker must be assigned. Please go to localhost:8000/" + str(case.id) 
-			
-			# send_mail("advocate@asuc.org", case.name + " [New Case Created]", email_message)
 			
 			return redirect('case_detail', case.pk)
 

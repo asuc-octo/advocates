@@ -151,7 +151,7 @@ def detail(request, case_id):
 		form = CommentForm(request.POST, request.FILES)
 		if form.is_valid(): 
 			comment = form.save(commit=False)
-			comment.user = request.user 
+			comment.user = request.user
 			comment.case = case
 			comment.created_date = timezone.now()
 			comment.save()
